@@ -1,0 +1,9 @@
+Library
+.vs
+Logs
+obj 
+Packages
+Temp
+.vsconfig
+Assembly-CSharp.csproj
+Game Life.sln
