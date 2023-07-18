@@ -5,16 +5,16 @@ using UnityEngine.EventSystems;
 public class Block : MonoBehaviour , IPointerClickHandler
 {
     private GameObject block;
+    
     public SpriteRenderer blockRednderer;
     public SpriteRenderer spriteLive;
     public SpriteRenderer spriteDead;
-    public GeneratorWorld generator;
+    public int neighborn;
     public bool isLive;
     public void Start()
     {
         block = gameObject;
         blockRednderer = block.GetComponent<SpriteRenderer>();
-        generator = block.GetComponentInParent<GeneratorWorld>();
     }
     public void Update()
     {
@@ -63,7 +63,7 @@ public class Block : MonoBehaviour , IPointerClickHandler
     }
     public void Step()
     {
-        isLive = CheakLife(neighborns:generator.GetNeighborn(block.transform.position),heIsLive:isLive);
+        CheakLife(neighborn,isLive);
         CheakSprite();
     }
 
@@ -71,4 +71,5 @@ public class Block : MonoBehaviour , IPointerClickHandler
     {
         isLive = !isLive;
     }
+
 }
