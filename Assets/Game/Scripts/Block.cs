@@ -1,75 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-public class Block : MonoBehaviour , IPointerClickHandler
+
+[System.Serializable]
+public class Block
 {
-    private GameObject block;
-    
-    public SpriteRenderer blockRednderer;
-    public SpriteRenderer spriteLive;
-    public SpriteRenderer spriteDead;
-    public int neighborn;
-    public bool isLive;
-    public void Start()
+    [SerializeField] protected Vector3 _pos;
+    public Vector3 pos { get { return _pos; } set { _pos = value; } }
+    [SerializeField] protected BlockState _state;
+    public BlockState state { get { return _state; } set { _state = value; } }
+    public void Display(GameObject gameObject)
     {
-        block = gameObject;
-        blockRednderer = block.GetComponent<SpriteRenderer>();
-    }
-    public void Update()
-    {
-        Step();
-    }
-    public void FixedUpdate()
-    {
-        CheakSprite();
-    }
-    public void CheakSprite()
-    { 
-        if(isLive == true)
+        switch (state)
         {
-            blockRednderer.color = spriteLive.color;
-        }
-        else
-        {
-            blockRednderer.color = spriteDead.color;
+            case (BlockState.NotLive):
+                gameObject.SetActive(false);
+                break;
+            case (BlockState.Live):
+                gameObject.transform.position = pos;
+                gameObject.SetActive(true);
+                break;
+            default:
+                decimal f = 1;
+                decimal e = 0;
+                decimal error = f / e;
+                break;
         }
     }
-    public bool CheakLife(int neighborns,bool heIsLive)
+    public Block(Vector3 pos,BlockState state)
     {
-        Debug.Log(neighborns);
-        if (heIsLive == true)
-        {
-            if (neighborns < 2)
-            {
-                return false;
-            }
-            else if (neighborns == 2 || neighborns == 3)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if(heIsLive == false && neighborns == 3) {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        this.pos = pos;
+        this.state = state;
     }
-    public void Step()
-    {
-        CheakLife(neighborn,isLive);
-        CheakSprite();
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        isLive = !isLive;
-    }
-
 }
