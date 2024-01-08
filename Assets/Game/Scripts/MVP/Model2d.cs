@@ -8,7 +8,7 @@ public class Model2d : Model
 {
     protected List<Block> listGameObject;
 
-    public Model2d(Presenter presenter,List<Block> blocks) : base(presenter)
+    public Model2d(List<Block> blocks)
     {
         listGameObject = blocks;
     }
@@ -29,14 +29,11 @@ public class Model2d : Model
     public override List<Block> GetNeighborn(Vector3 pos)
     {
         List<Block> res = new List<Block>(8);
-        for (float nx = pos.x - 1; nx < pos.x + 1; nx++)
+        for (float nx = pos.x - 1; nx <= pos.x + 1; nx++)
         {
-            for (float ny = pos.y - 1; ny < pos.y + 1; ny++)
+            for (float ny = pos.y - 1; ny <= pos.y + 1; ny++)
             {
-                for (float nz = pos.z; nz < pos.z; nz++)
-                {
-                    res.Add(GetBlock(new Vector3(nx, ny, nz)));
-                }
+                res.Add(GetBlock(new Vector3(nx, ny,pos.z)));
             }
         }
         return res;

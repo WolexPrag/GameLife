@@ -8,19 +8,17 @@ namespace Game.Menu.MVP.Standart
 {
     public abstract class View : MonoBehaviour
     {
-        public IGetter<GameObject> _getter;
-        public Presenter _presenter;
-        public virtual void Init(Presenter presenter,IGetter<GameObject> getter)
+        protected Presenter _presenter;
+        public virtual void Init(Presenter presenter)
         {
-            _presenter = presenter;
-            _getter = getter;
+            _presenter = presenter; 
         }
-        public virtual void NextFrame()
+        public virtual void ClickNextFrame()
         {
             _presenter.NextFrame();
         }
-        public abstract void Paint();
-        public abstract void Display(Block showBlock);
-        public abstract void Display(List<Block> showBlock);
+        protected abstract void Paint();
+        protected abstract void Display(Block showBlock);
+        protected abstract void Display(List<Block> showBlock);
     } 
 }

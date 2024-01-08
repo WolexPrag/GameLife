@@ -7,8 +7,8 @@ namespace Game.Menu.MVP.Standart
 {
     public abstract class Model
     {
-        protected Presenter _presenter;
-        public Model(Presenter presenter)
+        protected Presenter _presenter; 
+        public void Init(Presenter presenter)
         {
             _presenter = presenter;
         }

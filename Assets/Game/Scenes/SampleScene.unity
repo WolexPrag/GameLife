@@ -573,10 +573,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   getter:
     _storage: []
-    _prefab: {fileID: 0}
+    _prefab: {fileID: 9033474571143901170, guid: 0cb759d7f40b207458bd507c17f296cb, type: 3}
   prefabBlockLive: {fileID: 9033474571143901170, guid: 0cb759d7f40b207458bd507c17f296cb, type: 3}
   view: {fileID: 1119704611}
-  StartBlocks: []
+  StartBlocks:
+  - _pos: {x: 0, y: 0, z: 0}
+    _state: 1
+  - _pos: {x: 1, y: 0, z: 0}
+    _state: 1
+  - _pos: {x: 2, y: 0, z: 0}
+    _state: 1
 --- !u!1 &1042783007
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,6 +872,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e491048dca65724a941d08998210c05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NextFrameButton: {fileID: 155978455}
+  StopButton: {fileID: 1631084759}
 --- !u!1 &1419461458
 GameObject:
   m_ObjectHideFlags: 0
