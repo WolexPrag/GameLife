@@ -1,57 +1,49 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Menu.MVP.Standart;
+using Game.MVP;
+using UnityEngine.Events;
 
-[System.Serializable]
-public class Model2d : Model
+public class Model2D : MonoBehaviour, IModel
 {
-    protected List<Block> listGameObject;
+    [SerializeField] protected List<Block> floar;
+    [SerializeField] public event UnityAction<List<Block>> FloorChanges;
 
-    public Model2d(List<Block> blocks)
+    protected Block FindBlock(Vector3 pos)
     {
-        listGameObject = blocks;
+        return floar.Find(f1 => (f1.pos.x == pos.x) && (f1.pos.y == pos.y) && (f1.pos.z == pos.z));
     }
-
-    public override Block GetBlock(Vector3 pos)
+    public void Init()
     {
-        Block ret = listGameObject.Find(s1 => ((s1.pos.x == pos.x)&& (s1.pos.y == pos.y)&& (s1.pos.z == pos.z)));
+        if (floar == null)
+        {
+            floar = new List<Block>(25);
+        }
+    }
+    public Block GetBlock(Vector3 pos)
+    {
+        Block ret = FindBlock(pos);
         if (ret == null)
         {
-            ret = new Block(pos, BlockState.NotLive);
+            ret = new Block(pos, false);
+            floar.Add(ret);
         }
+
         return ret;
     }
-    public override List<Block> GetLiveBlock()
+
+    public List<Block> GetFloar()
     {
-        return listGameObject;
+        return floar;
     }
-    public override List<Block> GetNeighborn(Vector3 pos)
+    public void SetBlock(Block block)
     {
-        List<Block> res = new List<Block>(8);
-        for (float nx = pos.x - 1; nx <= pos.x + 1; nx++)
-        {
-            for (float ny = pos.y - 1; ny <= pos.y + 1; ny++)
-            {
-                res.Add(GetBlock(new Vector3(nx, ny,pos.z)));
-            }
-        }
-        return res;
+        Block where = FindBlock(block.pos);
+        FloorChanges?.Invoke(floar);
     }
-    public override void SetLiveCube(List<Block> blocks)
+
+    public void SetFloorBlock(List<Block> blocks)
     {
-        listGameObject = blocks;
-    }
-    public override void SetLiveCube(Block block)
-    {
-        Block giveBlock = GetBlock(block.pos);
-        if (giveBlock.state == BlockState.NotLive)
-        {
-            listGameObject.Add(block);
-        }
-        else
-        {
-            giveBlock = block;
-        }
+        floar = blocks;
+        FloorChanges?.Invoke(floar);
     }
 }

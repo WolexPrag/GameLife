@@ -1,50 +1,57 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.MVP;
+using UnityEngine.Events;
+using static Unity.Collections.AllocatorManager;
 using UnityEngine.UI;
-using Game.Menu.MVP.Standart;
 
 [System.Serializable]
-public class View2d : View
+public class View2D : MonoBehaviour, IView
 {
-    public Button NextFrameButton;
-    public Button StopButton;
-    protected IGetter<GameObject> _getter;
+    public event UnityAction nextFrame;
+    [SerializeField] protected Button nextFrameButton;
     [SerializeField] protected GameObject Prefab;
-    private void Awake()
+    [SerializeField] protected List<GameObject> cluster;
+
+    public void Init()
     {
-        _getter = new Getter(Prefab);
-    }
-    private void OnEnable()
-    {
-        NextFrameButton.onClick.AddListener(ClickNextFrame);
-    }
-    private void OnDisable()
-    {
-        NextFrameButton.onClick.RemoveListener(ClickNextFrame);
-    }
-    protected override void Display(Block showBlock)
-    {
-        GameObject giveBlock = _getter.Take();
-        giveBlock.SetActive(false);
-        showBlock.Display(giveBlock);
-        _getter.Return(giveBlock);
-    }
-    protected override void Display(List<Block> showBlock)
-    {
-        for (int i = 0; i < showBlock.Count; i++)
+        if (cluster == null) 
         {
-            Display(showBlock[i]);
+            cluster = new List<GameObject>();
+        }
+
+        nextFrameButton.onClick.AddListener(() => 
+        { nextFrame?.Invoke(); }) ;
+    }
+    public void UpdateFloar(List<Block> blocks)
+    {
+        if (cluster.Count < blocks.Count)
+        {
+            ClusterExpansion(blocks.Count);
+        }
+        for (int i  = 0; i < cluster.Count; i++)
+        {
+            if (i < blocks.Count)
+            {
+                cluster[i].SetActive(true);
+                cluster[i].transform.position = blocks[i].pos;
+            }
+            else
+            {
+                cluster[i].SetActive(false);
+            }
+        }
+
+    }
+    protected void ClusterExpansion(int needSize)
+    {
+        for (int i = cluster.Count; i < needSize; i++)
+        {
+            cluster.Add(Instantiate(Prefab));
         }
     }
-    public override void ClickNextFrame()
-    {
-        _presenter.NextFrame();
-        Display(_presenter.GetDisplay());
-    }
-    protected override void Paint()
-    {
-        /*_presenter.SetBlock();*/
-    }
 
+    
 }

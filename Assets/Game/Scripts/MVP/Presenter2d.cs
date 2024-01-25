@@ -1,79 +1,73 @@
+using Game.MVP;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Menu.MVP.Standart;
 
-[System.Serializable]
-public class Presenter2d : Presenter
+public class Presenter2D : Presenter
 {
-    public override List<Block> GetDisplay()
+    protected override List<Block> GetNeighborns(Vector3 pos)
     {
-        return _model.GetLiveBlock();   
-    }
-
-    public int GetCountNeighborn(List<Block> blocks, BlockState state)
-    {
-        int res = 0;
-        for (int i = 0; i < blocks.Count; i++)
+        List<Block> ret = new List<Block>(8);
+        for (float xn = pos.x - 1; xn <= pos.x + 1; xn++)
         {
-            if (blocks[i].state == state)
+            for (float yn = pos.y - 1; yn <= pos.y + 1; yn++)
             {
-                res++;
-            }
-        }
-        return res;
-    }
-
-    public List<Block> GetCheakBlocks()
-    {
-        List<Block> liveBlock = _model.GetLiveBlock();
-        List<Block> ret = new List<Block>(liveBlock.Count * 9);
-        List<Block> neighb;
-        for (int i = 0; i < liveBlock.Count; i++)
-        {
-            neighb = _model.GetNeighborn(liveBlock[i].pos);
-            for (int c = 0; c < neighb.Count; c++)
-            {
-                if (ret.Find(s1 => (s1.pos.x == neighb[c].pos.x) & (s1.pos.y == neighb[c].pos.y) & (s1.pos.z == neighb[c].pos.z)) != null)
+                if (xn == pos.x && yn == pos.y)
                 {
-                    neighb.Remove(neighb[c]);
                     continue;
                 }
+                ret.Add(_model.GetBlock(new Vector3(xn,yn,pos.z)));
             }
-            ret.AddRange(neighb);
         }
         return ret;
     }
-    public override void NextFrame()
+
+    protected override void NextFrame()
     {
-        List<Block> current = GetCheakBlocks();
-        List<Block> next = new List<Block>(current.Count);
-        for (int i = 0; i < current.Count; i++)
+        List<Block> chekedBlock = GetBlocksForCheak();
+        List<Block> nextFrame = new List<Block>(chekedBlock.Count);
+        for (int i = 0; i < chekedBlock.Count; i++)
         {
-            if (Rule(current[i].state,_model.GetNeighborn(current[i].pos))==BlockState.NotLive)
-            {
-                continue;
-            }
-            next.Add(current[i]);
+            chekedBlock[i].IsLive = Rule(chekedBlock[i].IsLive, SortBlock(GetNeighborns(chekedBlock[i].pos), true).Count);
+            nextFrame.Add(chekedBlock[i]);
         }
-        _model.SetLiveCube(next);
+
+        _model.SetFloorBlock(nextFrame);
+    }
+    protected List<Block> GetBlocksForCheak()
+    {
+        List<Block> ret = _model.GetFloar();
+        ret.Capacity = ret.Count * 9;
+        List<Block> neighborns;
+        int a = 0;
+        for (int centers = 0; centers < ret.Count; centers++)
+        {
+            a++;
+            neighborns = GetNeighborns(ret[centers].pos);
+            for (int neigh = 0; neigh < neighborns.Count; neigh++)
+            {
+                a++;
+                if (ret.Contains(neighborns[neigh]) == true)
+                {
+                    neighborns.RemoveAt(neigh);
+                    neigh--;
+                }
+                if (a > 100)
+                {
+                    break;
+                }
+            }
+            if (a > 100)
+            {
+                break;
+            }
+        }
+
+        return ret;
     }
 
-    public override BlockState Rule(BlockState centr, List<Block> neighborns)
+    protected override List<Block> SortBlock(List<Block> blocks, bool isLife)
     {
-        int countLiveNeighborns = GetCountNeighborn(neighborns, BlockState.Live);
-        if (countLiveNeighborns == 3 && centr == BlockState.NotLive) 
-        {
-            return BlockState.Live;
-        }
-        else if (countLiveNeighborns == 2 && centr == BlockState.Live)
-        {
-            return BlockState.Live;
-        }
-        else
-        {
-            return BlockState.NotLive;
-        }
-        
+        return blocks.FindAll(f1 => f1.IsLive == isLife);
     }
 }
