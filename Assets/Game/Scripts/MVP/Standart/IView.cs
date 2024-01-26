@@ -10,6 +10,7 @@ namespace Game.MVP
     public interface IView
     {
         event UnityAction nextFrame;
+        event UnityAction<Vector3> paint;
         void Init();
         void UpdateFloar(List<Block> blocks);
     }

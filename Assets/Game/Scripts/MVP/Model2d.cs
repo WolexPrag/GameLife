@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.MVP;
 using UnityEngine.Events;
+using System;
+using System.ComponentModel;
 
 public class Model2D : MonoBehaviour, IModel
 {
@@ -19,6 +21,7 @@ public class Model2D : MonoBehaviour, IModel
             floar = new List<Block>(25);
         }
     }
+    
     public Block GetBlock(Vector3 pos)
     {
         Block ret = FindBlock(pos);
@@ -38,12 +41,14 @@ public class Model2D : MonoBehaviour, IModel
     public void SetBlock(Block block)
     {
         Block where = FindBlock(block.pos);
-        FloorChanges?.Invoke(floar);
+        FloorChanges?.Invoke(floar.FindAll(f1 => f1.IsLive == true));
     }
 
     public void SetFloorBlock(List<Block> blocks)
     {
         floar = blocks;
-        FloorChanges?.Invoke(floar);
+        FloorChanges?.Invoke(floar.FindAll(f1 => f1.IsLive == true));
     }
+
+   
 }

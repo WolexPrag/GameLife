@@ -1,6 +1,7 @@
 using Game.MVP;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Presenter2D : Presenter
@@ -28,44 +29,34 @@ public class Presenter2D : Presenter
         List<Block> nextFrame = new List<Block>(chekedBlock.Count);
         for (int i = 0; i < chekedBlock.Count; i++)
         {
-            chekedBlock[i].IsLive = Rule(chekedBlock[i].IsLive, SortBlock(GetNeighborns(chekedBlock[i].pos), true).Count);
-            nextFrame.Add(chekedBlock[i]);
+            nextFrame.Add(new Block(
+                chekedBlock[i].pos, 
+                Rule(chekedBlock[i].IsLive,SortBlock(GetNeighborns(chekedBlock[i].pos), true).Count))
+                );
         }
 
         _model.SetFloorBlock(nextFrame);
     }
     protected List<Block> GetBlocksForCheak()
     {
-        List<Block> ret = _model.GetFloar();
-        ret.Capacity = ret.Count * 9;
-        List<Block> neighborns;
-        int a = 0;
-        for (int centers = 0; centers < ret.Count; centers++)
+        List<Block> curentBlocks = SortBlock(_model.GetFloar(),true);
+        List<Block> ret = new List<Block>(curentBlocks.Count * 9);
+        for (int i = 0; i < curentBlocks.Count; i++)
         {
-            a++;
-            neighborns = GetNeighborns(ret[centers].pos);
-            for (int neigh = 0; neigh < neighborns.Count; neigh++)
-            {
-                a++;
-                if (ret.Contains(neighborns[neigh]) == true)
-                {
-                    neighborns.RemoveAt(neigh);
-                    neigh--;
-                }
-                if (a > 100)
-                {
-                    break;
-                }
-            }
-            if (a > 100)
-            {
-                break;
-            }
+            ret.Add(curentBlocks[i]);
+            ret.AddRange(GetNeighborns(curentBlocks[i].pos));
         }
-
+        ret = ret.GroupBy(x => x.pos).Select(x => x.First()).ToList();
         return ret;
     }
-
+    protected override void Paint(Vector3 pos)
+    {
+        Block set = _model.GetBlock(
+                 new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), Mathf.Round(pos.z))
+                 );
+        set.IsLive = !set.IsLive;
+        _model.SetBlock(set);
+    }
     protected override List<Block> SortBlock(List<Block> blocks, bool isLife)
     {
         return blocks.FindAll(f1 => f1.IsLive == isLife);

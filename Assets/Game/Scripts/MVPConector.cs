@@ -16,7 +16,7 @@ public class MVPConector : MonoBehaviour
     protected Presenter2D presenter;
     private void Awake()
     {
-        connectButton.onClick.AddListener(()=>Conect());
+        Conect();
     }
     public void Conect()
     {
